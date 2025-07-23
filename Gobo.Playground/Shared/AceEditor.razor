@@ -32,6 +32,9 @@
     [Parameter]
     public bool IsReadonly { get; set; } = false;
 
+    [Parameter]
+    public bool ShowPrintMargin { get; set; } = true;
+
     public string Id { get; set; } = "aceeditor_" + Guid.NewGuid().ToString("N");
 
     private DotNetObjectReference<AceEditor> _objRef = default!;
@@ -52,7 +55,7 @@
     public async Task SetLanguage(string? language)
     {
         Language = language;
-        await JS.InvokeVoidAsync("editorRender", Id, Language, Theme, IsReadonly, TabSize);
+        await JS.InvokeVoidAsync("editorRender", Id, Language, Theme, IsReadonly, TabSize, ShowPrintMargin);
     }
 
     public async Task SetWidth(int width)
@@ -62,7 +65,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("editorRender", Id, Language, Theme, IsReadonly, TabSize);
+        await JS.InvokeVoidAsync("editorRender", Id, Language, Theme, IsReadonly, TabSize, ShowPrintMargin);
     }
 
     protected async Task TriggerAceInstance()
@@ -74,5 +77,11 @@
     public void Dispose()
     {
         _objRef?.Dispose();
+    }
+
+    public async Task SetShowPrintMargin(bool show)
+    {
+        ShowPrintMargin = show;
+        await JS.InvokeVoidAsync("setShowPrintMargin", Id, show);
     }
 }

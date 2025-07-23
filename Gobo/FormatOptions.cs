@@ -10,9 +10,9 @@ public enum BraceStyle
 
 public class FormatOptions
 {
-    public bool UseTabs { get; set; } = true;
+    public bool UseTabs { get; set; } = false;
     public int TabWidth { get; set; } = 4;
-    public int Width { get; set; } = 90;
+    public int MaxLineWidth { get; set; } = -1;
     public bool FlatExpressions { get; set; } = false;
     public bool VerticalStructs { get; set; } = true;
 

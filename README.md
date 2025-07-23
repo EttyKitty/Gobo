@@ -1,6 +1,6 @@
 ## Gobo: GML Formatter
 
-[Try the formatter here!](https://pizzaandy.github.io/Gobo/)
+[Try the formatter here!](https://ettykitty.github.io/Gobo/)
 
 Gobo is an opinionated formatter for GameMaker Language. It enforces a consistent style by parsing and re-printing your code with its own rules, taking maximum line length into account.
 

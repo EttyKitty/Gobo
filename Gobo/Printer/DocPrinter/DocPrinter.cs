@@ -327,7 +327,11 @@ internal class DocPrinter
 
     private void ProcessGroup(Group group, PrintMode mode, Indent indent)
     {
-        if (mode is PrintMode.Flat or PrintMode.ForceFlat && !ShouldRemeasure)
+        if (PrinterOptions.MaxLineWidth == -1)
+        {
+            Push(group.Contents, group.Break ? PrintMode.Break : PrintMode.Flat, indent);
+        }
+        else if (mode is PrintMode.Flat or PrintMode.ForceFlat && !ShouldRemeasure)
         {
             Push(group.Contents, group.Break ? PrintMode.Break : mode, indent);
         }
@@ -390,7 +394,7 @@ internal class DocPrinter
         var content = fill.Contents[0];
         var contentFlatCmd = new PrintCommand(indent, PrintMode.Flat, content);
         var contentBreakCmd = new PrintCommand(indent, PrintMode.Break, content);
-        bool contentFits = Fits(contentFlatCmd);
+        bool contentFits = PrinterOptions.MaxLineWidth == -1 || Fits(contentFlatCmd);
 
         if (fill.Contents.Count == 1)
         {
@@ -434,7 +438,7 @@ internal class DocPrinter
             PrintMode.Flat,
             Doc.Concat(new[] { content, whitespace, secondContent })
         );
-        var firstAndSecondContentFits = Fits(firstAndSecondContentFlatCmd);
+        var firstAndSecondContentFits = PrinterOptions.MaxLineWidth == -1 || Fits(firstAndSecondContentFlatCmd);
 
         if (firstAndSecondContentFits)
         {
@@ -458,10 +462,16 @@ internal class DocPrinter
 
     private bool Fits(PrintCommand possibleCommand)
     {
+        // If MaxLineWidth is -1, always return true, effectively disabling the line width check.
+        if (PrinterOptions.MaxLineWidth == -1)
+        {
+            return true;
+        }
+
         return DocFitter.Fits(
             possibleCommand,
             RemainingCommands,
-            PrinterOptions.Width - CurrentWidth,
+            PrinterOptions.MaxLineWidth - CurrentWidth,
             GroupModeMap,
             Indenter
         );
