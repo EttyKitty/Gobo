@@ -43,14 +43,25 @@
 
         <div class="form-check">
             <input type="checkbox"
-                   class="form-check-input"
-                   id="flatExpressions"
-                   checked="@_formatOptions.FlatExpressions"
-                   value="@_formatOptions.FlatExpressions" @oninput="@OnFlatExpressionsChange" />
+                class="form-check-input"
+                id="flatExpressions"
+                checked="@_formatOptions.FlatExpressions"
+                value="@_formatOptions.FlatExpressions" @oninput="@OnFlatExpressionsChange"
+                title="If checked, expressions will always be formatted horizontally." />
             <label for="flatExpressions" class="text-light form-check-label">Flat Expressions</label>
         </div>
 
-        <a class="btn btn-outline-light mt-auto" href="https://github.com/Pizzaandy/Gobo" target="_blank">
+        <div class="form-check">
+            <input type="checkbox"
+                class="form-check-input"
+                id="verticalStructs"
+                checked="@_formatOptions.VerticalStructs"
+                value="@_formatOptions.VerticalStructs" @oninput="@OnVerticalStructsChange"
+                title="If checked, structs will always be formatted vertically." />
+            <label for="verticalStructs" class="text-light form-check-label">Vertical Structs</label>
+        </div>
+
+        <a class="btn btn-outline-light mt-auto" href="https://github.com/ettykitty/Gobo" target="_blank">
             <i class="bi-github"></i> GitHub
         </a>
     </div>
@@ -197,6 +208,12 @@ call()";
     async Task OnShowAstChanged(ChangeEventArgs args)
     {
         _showAst = (bool)args.Value;
+        await Format();
+    }
+
+    async Task OnVerticalStructsChange(ChangeEventArgs args)
+    {
+        _formatOptions.VerticalStructs = (bool)args.Value;
         await Format();
     }
 }

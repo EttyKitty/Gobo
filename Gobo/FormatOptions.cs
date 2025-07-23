@@ -14,6 +14,7 @@ public class FormatOptions
     public int TabWidth { get; set; } = 4;
     public int Width { get; set; } = 90;
     public bool FlatExpressions { get; set; } = false;
+    public bool VerticalStructs { get; set; } = true;
 
     [JsonIgnore]
     public BraceStyle BraceStyle { get; set; } = BraceStyle.SameLine;

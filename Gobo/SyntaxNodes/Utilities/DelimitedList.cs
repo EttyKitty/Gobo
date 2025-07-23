@@ -30,6 +30,8 @@ internal class DelimitedList
 
         leadingContents ??= Doc.Null;
 
+        bool isStruct = openToken == "{" && closeToken == "}";
+
         if (arguments.Children.Count > 0)
         {
             Doc printedArguments = Print(
@@ -38,12 +40,14 @@ internal class DelimitedList
                 separator,
                 allowTrailingSeparator,
                 forceBreak,
-                leadingContents
+                leadingContents,
+                forceInternalBreaks: isStruct && ctx.Options.VerticalStructs
             );
+
 
             LineDoc lineBreak = Doc.SoftLine;
 
-            if (forceBreak)
+            if (forceBreak || (isStruct && ctx.Options.VerticalStructs))
             {
                 lineBreak = Doc.HardLine;
             }
@@ -68,7 +72,14 @@ internal class DelimitedList
             );
         }
 
-        parts.Add(Doc.SoftLine);
+        if (isStruct && ctx.Options.VerticalStructs)
+        {
+            parts.Add(Doc.HardLine);
+        }
+        else
+        {
+            parts.Add(Doc.SoftLine);
+        }
         parts.Add(closeToken);
 
         return Doc.GroupWithId(groupId, parts);
@@ -80,7 +91,8 @@ internal class DelimitedList
         string separator,
         bool allowTrailingSeparator = false,
         bool forceBreak = false,
-        Doc? leadingContents = null
+        Doc? leadingContents = null,
+        bool forceInternalBreaks = false
     )
     {
         leadingContents ??= Doc.Null;
@@ -101,7 +113,15 @@ internal class DelimitedList
             if (i != list.Children.Count - 1)
             {
                 parts.Add(separator);
-                parts.Add(forceBreak ? Doc.HardLine : Doc.Line);
+
+                if (forceInternalBreaks)
+                {
+                    parts.Add(Doc.HardLine);
+                }
+                else
+                {
+                    parts.Add(forceBreak ? Doc.HardLine : Doc.Line);
+                }
             }
             else if (allowTrailingSeparator)
             {
