@@ -8,13 +8,29 @@
 
         <h5 class="text-light">Gobo Playground</h5>
 
-        <label for="maxLineWidth" class="text-light pt-3">Max Line Width</label>
-        <input type="number"
-            class="form-control form-control-sm"
-            id="maxLineWidth"
-            value="@_formatOptions.MaxLineWidth"
-            @oninput="@OnWidthChanged"
-            title="Set the maximum line width for formatting. Set to -1 to disable line width limits." />
+        <div class="form-check pt-2">
+        <input type="checkbox"
+            class="form-check-input"
+            id="limitWidth"
+            checked="@_formatOptions.LimitWidth"
+            value="@_formatOptions.LimitWidth"
+            @oninput="@OnLimitWidthChange"
+            title="If checked, the line width will be limited." />
+            <label for="limitWidth" class="text-light form-check-label">Limit Width</label>
+        </div>
+
+        @if (_formatOptions.LimitWidth)
+        {
+            <div class="mb-3">
+            <label for="maxLineWidth" class="form-label text-light">Max Line Width</label>
+            <input type="number"
+                class="form-control form-control-sm"
+                id="maxLineWidth"
+                value="@_formatOptions.MaxLineWidth"
+                @oninput="@OnWidthChanged"
+                title="Set the maximum line width for formatting. Set to -1 to disable line width limits." />
+            </div>
+        }
 
         <div class="form-check pt-2">
         <input type="checkbox"
@@ -77,7 +93,7 @@
                         Value="@_input"
                         ValueChanged="@OnInputChanged"
                         Language="game_maker_language"
-                        ShowPrintMargin="@(_formatOptions.MaxLineWidth > 0)"> </AceEditor>
+                        ShowPrintMargin="@(_formatOptions.LimitWidth && _formatOptions.MaxLineWidth > 0)"> </AceEditor>
             </div>
             @if (_showAst)
             {
@@ -86,14 +102,14 @@
                             Language="json"
                             TabSize="2"
                             IsReadonly="true"
-                            ShowPrintMargin="@(_formatOptions.MaxLineWidth > 0)"> </AceEditor>
+                            ShowPrintMargin="@(_formatOptions.LimitWidth && _formatOptions.MaxLineWidth > 0)"> </AceEditor>
                 </div>
             }
             <div class="col-xl">
                 <AceEditor @ref="outputEditor"
                         Language="game_maker_language"
                         IsReadonly="true"
-                        ShowPrintMargin="@(_formatOptions.MaxLineWidth > 0)"> </AceEditor>
+                        ShowPrintMargin="@(_formatOptions.LimitWidth && _formatOptions.MaxLineWidth > 0)"> </AceEditor>
             </div>
         </div>
     </div>
@@ -126,7 +142,7 @@ call()";
         {
             await inputEditor.SetText(_initialText);
 
-            bool showMargin = _formatOptions.MaxLineWidth > 0;
+            bool showMargin = _formatOptions.LimitWidth && _formatOptions.MaxLineWidth > 0;
 
             await inputEditor.SetShowPrintMargin(showMargin);
             await outputEditor.SetShowPrintMargin(showMargin);
@@ -190,9 +206,9 @@ call()";
         {
             return;
         }
-        _formatOptions.MaxLineWidth = number;
+        _formatOptions.MaxLineWidth = Math.Max(number, 0);
 
-        bool showMargin = _formatOptions.MaxLineWidth > 0;
+        bool showMargin = _formatOptions.LimitWidth && _formatOptions.MaxLineWidth > 0;
 
         await inputEditor.SetShowPrintMargin(showMargin);
         await outputEditor.SetShowPrintMargin(showMargin);
@@ -243,6 +259,12 @@ call()";
     async Task OnVerticalStructsChange(ChangeEventArgs args)
     {
         _formatOptions.VerticalStructs = (bool)args.Value;
+        await Format();
+    }
+
+    async Task OnLimitWidthChange(ChangeEventArgs args)
+    {
+        _formatOptions.LimitWidth = (bool)args.Value;
         await Format();
     }
 }

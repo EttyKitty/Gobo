@@ -95,6 +95,7 @@ public static partial class GmlFormatter
 
         var printOptions = new Printer.DocPrinterOptions()
         {
+            LimitWidth = options.LimitWidth,
             MaxLineWidth = options.MaxLineWidth,
             TabWidth = options.TabWidth,
             UseTabs = options.UseTabs,

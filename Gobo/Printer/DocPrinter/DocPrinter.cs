@@ -327,7 +327,7 @@ internal class DocPrinter
 
     private void ProcessGroup(Group group, PrintMode mode, Indent indent)
     {
-        if (PrinterOptions.MaxLineWidth == -1)
+        if (!PrinterOptions.LimitWidth)
         {
             Push(group.Contents, group.Break ? PrintMode.Break : PrintMode.Flat, indent);
         }
@@ -394,7 +394,7 @@ internal class DocPrinter
         var content = fill.Contents[0];
         var contentFlatCmd = new PrintCommand(indent, PrintMode.Flat, content);
         var contentBreakCmd = new PrintCommand(indent, PrintMode.Break, content);
-        bool contentFits = PrinterOptions.MaxLineWidth == -1 || Fits(contentFlatCmd);
+        bool contentFits = Fits(contentFlatCmd);
 
         if (fill.Contents.Count == 1)
         {
@@ -438,7 +438,7 @@ internal class DocPrinter
             PrintMode.Flat,
             Doc.Concat(new[] { content, whitespace, secondContent })
         );
-        var firstAndSecondContentFits = PrinterOptions.MaxLineWidth == -1 || Fits(firstAndSecondContentFlatCmd);
+        var firstAndSecondContentFits = Fits(firstAndSecondContentFlatCmd);
 
         if (firstAndSecondContentFits)
         {
@@ -462,8 +462,7 @@ internal class DocPrinter
 
     private bool Fits(PrintCommand possibleCommand)
     {
-        // If MaxLineWidth is -1, always return true, effectively disabling the line width check.
-        if (PrinterOptions.MaxLineWidth == -1)
+        if (!PrinterOptions.LimitWidth)
         {
             return true;
         }
