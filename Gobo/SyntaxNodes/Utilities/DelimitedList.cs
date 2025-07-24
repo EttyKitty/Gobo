@@ -32,7 +32,15 @@ internal class DelimitedList
 
         bool isStruct = openToken == "{" && closeToken == "}";
         bool isArray = openToken == "[" && closeToken == "]";
-        bool forceVerticalLayout = forceBreak || (isStruct && ctx.Options.VerticalStructs) || (isArray && ctx.Options.VerticalArrays);
+        bool forceVerticalLayout = forceBreak || (isStruct && ctx.Options.VerticalStructs);
+
+        if (isArray && ctx.Options.VerticalArrays)
+        {
+            if (arguments.Children.Count > 1)
+            {
+                forceVerticalLayout = true;
+            }
+        }
 
         if (arguments.Children.Count > 0)
         {
