@@ -15,6 +15,7 @@ public class FormatOptions
     public int MaxLineWidth { get; set; } = 90;
     public bool FlatExpressions { get; set; } = false;
     public bool VerticalStructs { get; set; } = true;
+    public bool VerticalArrays { get; set; } = true;
     public bool LimitWidth { get; set; } = false;
 
     [JsonIgnore]

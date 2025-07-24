@@ -31,6 +31,8 @@ internal class DelimitedList
         leadingContents ??= Doc.Null;
 
         bool isStruct = openToken == "{" && closeToken == "}";
+        bool isArray = openToken == "[" && closeToken == "]";
+        bool forceVerticalLayout = forceBreak || (isStruct && ctx.Options.VerticalStructs) || (isArray && ctx.Options.VerticalArrays);
 
         if (arguments.Children.Count > 0)
         {
@@ -41,13 +43,13 @@ internal class DelimitedList
                 allowTrailingSeparator,
                 forceBreak,
                 leadingContents,
-                forceInternalBreaks: isStruct && ctx.Options.VerticalStructs
+                forceInternalBreaks: forceVerticalLayout
             );
 
 
             LineDoc lineBreak = Doc.SoftLine;
 
-            if (forceBreak || (isStruct && ctx.Options.VerticalStructs))
+            if (forceBreak || forceVerticalLayout)
             {
                 lineBreak = Doc.HardLine;
             }
@@ -72,7 +74,7 @@ internal class DelimitedList
             );
         }
 
-        if (isStruct && ctx.Options.VerticalStructs)
+        if (forceVerticalLayout)
         {
             parts.Add(Doc.HardLine);
         }

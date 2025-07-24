@@ -81,6 +81,16 @@
             <label for="verticalStructs" class="text-light form-check-label">Vertical Structs</label>
         </div>
 
+        <div class="form-check">
+            <input type="checkbox"
+                class="form-check-input"
+                id="verticalArrays"
+                checked="@_formatOptions.VerticalArrays"
+                value="@_formatOptions.VerticalArrays" @oninput="@OnVerticalArraysChange"
+                title="If checked, arrays will always be formatted vertically." />
+            <label for="verticalArrays" class="text-light form-check-label">Vertical Arrays</label>
+        </div>
+
         <a class="btn btn-outline-light mt-auto" href="https://github.com/ettykitty/Gobo" target="_blank">
             <i class="bi-github"></i> GitHub
         </a>
@@ -265,6 +275,12 @@ call()";
     async Task OnLimitWidthChange(ChangeEventArgs args)
     {
         _formatOptions.LimitWidth = (bool)args.Value;
+        await Format();
+    }
+
+    async Task OnVerticalArraysChange(ChangeEventArgs args)
+    {
+        _formatOptions.VerticalArrays = (bool)args.Value;
         await Format();
     }
 }
