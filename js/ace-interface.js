@@ -1,6 +1,6 @@
 ﻿window.aceEditors = window.aceEditors || {};
 
-window.editorRender = function(element, mode, theme, readOnly, tabSize) {
+window.editorRender = function(element, mode, theme, readOnly, tabSize, showPrintMargin) {
     let editor = window.aceEditors[element];
     if (!editor) {
         editor = ace.edit(element);
@@ -20,7 +20,7 @@ window.editorRender = function(element, mode, theme, readOnly, tabSize) {
         autoScrollEditorIntoView: true
     });
 
-    editor.setShowPrintMargin(true);
+    editor.setShowPrintMargin(showPrintMargin);
     editor.setHighlightActiveLine(false);
 };
 
