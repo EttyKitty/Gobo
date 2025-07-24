@@ -1,4 +1,5 @@
 ﻿using Gobo.Printer.DocTypes;
+using Gobo.SyntaxNodes.Gml;
 
 namespace Gobo.SyntaxNodes.PrintHelpers;
 
@@ -30,8 +31,8 @@ internal class DelimitedList
 
         leadingContents ??= Doc.Null;
 
-        bool isStruct = openToken == "{" && closeToken == "}";
-        bool isArray = openToken == "[" && closeToken == "]";
+        bool isStruct = arguments is StructExpression;
+        bool isArray = arguments is ArrayExpression;
         bool forceVerticalLayout = forceBreak || (isStruct && ctx.Options.VerticalStructs);
 
         if (isArray && ctx.Options.VerticalArrays)
