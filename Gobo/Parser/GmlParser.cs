@@ -1069,6 +1069,32 @@ internal class GmlParser
                 );
                 break;
             }
+
+            var currentAccessorToken = token;
+
+            if (Accept(TokenKind.OpenBracket))
+            {
+                var expressionsInBracket = new List<GmlSyntaxNode>();
+                Expect(Expression(out var firstExpression));
+                expressionsInBracket.Add(firstExpression);
+
+                while (!HitEOF && Accept(TokenKind.Comma))
+                {
+                    Expect(Expression(out var expression));
+                    expressionsInBracket.Add(expression);
+                }
+
+                Expect(TokenKind.CloseBracket);
+
+                foreach (var indexExpr in expressionsInBracket)
+                {
+                    @object = new ArrayIndexExpression(
+                        GetSpan(start, accepted),
+                        @object,
+                        indexExpr
+                    );
+                }
+            }
             else if (AcceptAny(accessors))
             {
                 var accessor = accepted.Text;
