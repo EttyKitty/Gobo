@@ -46,6 +46,7 @@ internal partial class SyntaxNodeSerializerContext : JsonSerializerContext { }
 [JsonDerivedType(typeof(MacroDeclaration))]
 [JsonDerivedType(typeof(MemberDotExpression))]
 [JsonDerivedType(typeof(MemberIndexExpression))]
+[JsonDerivedType(typeof(ArrayIndexExpression))]
 [JsonDerivedType(typeof(NewExpression))]
 [JsonDerivedType(typeof(Parameter))]
 [JsonDerivedType(typeof(ParameterList))]
