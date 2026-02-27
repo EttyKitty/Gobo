@@ -8,6 +8,13 @@ By using Gobo, you agree to cede control over the nitty-gritty details of format
 
 Gobo provides a few basic formatting options and has no plans to add more. It follows the [Option Philosophy](https://prettier.io/docs/en/option-philosophy.html) of Prettier.
 
+### ⭐ What is different in this fork?
+- An option to format structs vertically.
+- An option to format arrays vertically (1-length arrays are exempt).
+  - (Both of the above work only during variable initialization/declaration, and won't format vars in statements/expressions)
+- An option to disable line width limit completely, instead of having to set it to 999.
+- Array accessors will be chained separately (`array[0, 2]` > `array[0][2]`).
+
 ### Input
 
 ```js
