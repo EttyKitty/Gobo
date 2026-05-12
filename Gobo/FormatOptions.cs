@@ -17,6 +17,7 @@ public class FormatOptions
     public bool VerticalStructs { get; set; } = true;
     public bool VerticalArrays { get; set; } = true;
     public bool LimitWidth { get; set; } = false;
+    public bool BlankLineBetweenBlockAndSubsequentStatement { get; set; } = false;
 
     [JsonIgnore]
     public BraceStyle BraceStyle { get; set; } = BraceStyle.SameLine;

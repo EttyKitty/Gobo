@@ -91,6 +91,16 @@
             <label for="verticalArrays" class="text-light form-check-label">Vertical Arrays</label>
         </div>
 
+        <div class="form-check">
+            <input type="checkbox"
+                class="form-check-input"
+                id="blankLineBetweenBlockAndSubsequentStatement"
+                checked="@_formatOptions.BlankLineBetweenBlockAndSubsequentStatement"
+                value="@_formatOptions.BlankLineBetweenBlockAndSubsequentStatement" @oninput="@OnBlankLineBetweenBlockAndSubsequentStatement"
+                title="If checked, a blank line between a block statement and any subsequent statement at the same scope level will be inserted." />
+            <label for="blankLineBetweenBlockAndSubsequentStatement" class="text-light form-check-label">Blank Line Between Block And Subsequent Statement</label>
+        </div>
+
         <a class="btn btn-outline-light mt-auto" href="https://github.com/ettykitty/Gobo" target="_blank">
             <i class="bi-github"></i> GitHub
         </a>
@@ -281,6 +291,12 @@ call()";
     async Task OnVerticalArraysChange(ChangeEventArgs args)
     {
         _formatOptions.VerticalArrays = (bool)args.Value;
+        await Format();
+    }
+
+    async Task OnBlankLineBetweenBlockAndSubsequentStatement(ChangeEventArgs args)
+    {
+        _formatOptions.BlankLineBetweenBlockAndSubsequentStatement = (bool)args.Value;
         await Format();
     }
 }
