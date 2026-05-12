@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -14,37 +16,66 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact: gobo-linux
+            zip: gobo-linux.zip
+          - os: windows-latest
+            rid: win-x64
+            artifact: gobo-windows
+            zip: gobo-windows.zip
+          - os: macos-latest
+            rid: osx-arm64
+            artifact: gobo-macos-arm64
+            zip: gobo-macos-arm64.zip
+          - os: macos-latest
+            rid: osx-x64
+            artifact: gobo-macos-x64
+            zip: gobo-macos-x64.zip
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
 
-    - name: Publish artifacts
-      run: dotnet publish Gobo.Cli/Gobo.Cli.csproj -c Release -o ./publish
+      - name: Publish artifacts
+        run: dotnet publish Gobo.Cli/Gobo.Cli.csproj -c Release -r ${{ matrix.rid }} --self-contained true -o ./publish
 
-    - name: Upload artifacts
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: gobo-ubuntu
-        path: ./publish
+      - name: Zip (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: cd publish && zip ../${{ matrix.zip }} gobo
 
-    - name: Upload artifacts
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: gobo-windows
-        path: ./publish
+      - name: Zip (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path ./publish/gobo.exe -DestinationPath ./${{ matrix.zip }}
 
-    - name: Upload artifacts
-      if: matrix.os == 'macos-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: gobo-macos
-        path: ./publish
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ./${{ matrix.zip }}
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifacts/*.zip
