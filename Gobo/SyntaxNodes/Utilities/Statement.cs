@@ -6,8 +6,7 @@ namespace Gobo.SyntaxNodes.PrintHelpers;
 internal static class Statement
 {
     /// <summary>
-    /// Determines if a statement contains a block that should trigger a blank
-    /// line before the next statement when BlankLineBetweenBlockAndSubsequentStatement is enabled.
+    /// Determines if a statement is a block type.
     /// </summary>
     public static bool IsBlockStatement(GmlSyntaxNode node)
     {
@@ -108,7 +107,7 @@ internal static class Statement
             nextStatementNeedsLineBreak =
                 isTopLevelFunctionOrMethod
                 || (
-                    ctx.Options.BlankLineBetweenBlockAndSubsequentStatement
+                    ctx.Options.BlankLineAfterBlocks
                     && IsBlockStatement(child)
                 );
         }

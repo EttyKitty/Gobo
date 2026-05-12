@@ -8,7 +8,7 @@ public enum BraceStyle
     NewLine,
 }
 
-public class FormatOptions
+public record FormatOptions
 {
     public bool UseTabs { get; set; } = false;
     public int TabWidth { get; set; } = 4;
@@ -17,7 +17,7 @@ public class FormatOptions
     public bool VerticalStructs { get; set; } = true;
     public bool VerticalArrays { get; set; } = true;
     public bool LimitWidth { get; set; } = false;
-    public bool BlankLineBetweenBlockAndSubsequentStatement { get; set; } = false;
+    public bool BlankLineAfterBlocks { get; set; } = false;
 
     [JsonIgnore]
     public BraceStyle BraceStyle { get; set; } = BraceStyle.SameLine;
