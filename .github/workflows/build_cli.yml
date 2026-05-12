@@ -29,7 +29,7 @@ jobs:
             rid: osx-arm64
             artifact: gobo-macos-arm64
             zip: gobo-macos-arm64.zip
-          - os: macos-13
+          - os: macos-latest
             rid: osx-x64
             artifact: gobo-macos-x64
             zip: gobo-macos-x64.zip
@@ -65,6 +65,8 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Download all artifacts
