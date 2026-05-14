@@ -1,5 +1,5 @@
 <h1 align="center">
-  Gobo: GML Formatter (Etty's fork⭐)
+  GoboCat: The Flexible GML Formatter
 </h1>
 
 <h4 align="center">
@@ -8,29 +8,19 @@
 
 ## What is this?
 
-Gobo is an opinionated formatter for GameMaker Language. It enforces a consistent style by parsing and re-printing your code with its own rules.
+GoboCat is an opinionated formatter for GameMaker Language (GML). It enforces a consistent style by parsing and re-printing your code according to standardized rules.
 
-By using Gobo, you agree to cede control over the nitty-gritty details of formatting. In return, Gobo gives you speed, determinism, and smaller git diffs. End style debates with your team and save mental energy for what's important!
+By using GoboCat, you agree to cede control over the nitty-gritty details of formatting. In return, GoboCat gives you speed, determinism, and smaller git diffs. End style debates with your team and save mental energy for what's important!
 
-Gobo provides a few basic formatting options ~~and has no plans to add more. It follows the [Option Philosophy](https://prettier.io/docs/en/option-philosophy.html) of Prettier.~~
-- `Max Line Width`
-- `Use Tabs or Spaces` (custom size)
-- `Flat Expressions` (expressions ignore `Max Line Width`)
+## What is different in this fork? It's slightly less opinionated
 
-## ⭐What is different in this fork? It's slightly less opinionated⭐
+This fork maintains the core "Option Philosophy" of Prettier but introduces specific toggles for common GML stylistic preferences that the original project restricted.
 
-Default settings are my take on *opinionated* philosophy, and *are* opinionated.  
-*Giving* options I don't believe ever should be. Unless a pain to maintain, which most are not.
+### Key Differences
 
-### New options
-- `Vertical Structs` option
-- `Vertical Arrays` option (1-length arrays are exempt)
-- (Both of the above work only during variable initialization/declaration, and won't format vars in statements/expressions)
-- `Limit Width` on/off option (instead of setting `Max Line Width` to 999)
-- `\n After Blocks` option to add a blank line between a block statement and any subsequent statement at the same scope level (.NET [IDE2003](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide2003) style)
-
-### New opinionated logic
-- Array accessors are chained separately like in JS (`array[0, 2]` > `array[0][2]`; not an option because I hate these. May add a toggle later)
+- **Expanded Configuration:** Adds toggles for vertical formatting and block spacing.
+  - **Context-Aware Verticality:** New options for structs and arrays specifically target variable initialization to keep declarations clean without bloating inline logic.
+- **Modernized Array Accessors:** Automatically converts legacy multi-index arrays `array[0, 2]` to modern chained accessors `array[0][2]`.
 
 ## Example
 
@@ -61,21 +51,200 @@ do {
 return call();
 ```
 
+## Configuration
+
+GoboCat searches for a `.goborc.json` file starting from the directory of the file being formatted and searching up through parent directories. This allows you to have a global configuration at your project root and overrides in specific subdirectories.
+
+### Example `.goborc.json`
+
+```json
+{
+  "width": 90,
+  "useTabs": true
+}
+```
+
+> [!WARNING]
+> GoboCat uses strict JSON parsing. Ensure there are no trailing commas and that all property names are double-quoted.
+
+### Resolution Logic
+
+1. Find the file to be formatted.
+2. Look in the current directory for `.goborc.json`.
+3. If not found, move to the parent directory and repeat.
+4. If no file is found after reaching the drive root, default settings are applied.
+
+### Options
+
+The following configuration options are available:
+
+| Setting | Default | Description |
+| :--- | :--- | :--- |
+| `maxLineWidth` | `90` | The line length that the formatter will wrap on. |
+| `useTabs` | `false` | Whether to indent with tabs instead of spaces. |
+| `tabWidth` | `4` | Spaces per indentation level (used for line length calculation if `useTabs` is true). |
+| `flatExpressions` | `false` | Prevents expressions from wrapping, regardless of `maxLineWidth`. |
+| `verticalStructs` | `true` | Forces struct members onto new lines during variable initialization. |
+| `verticalArrays` | `true` | Forces array elements onto new lines during variable initialization (ignores 1-length arrays). |
+| `limitWidth` | `false` | Toggle for `maxLineWidth` enforcement. |
+| `blankLineAfterBlocks` | `true` | Injects a blank line after `}` if followed by another statement (IDE2003 style). |
 
 ## Limitations
 
-Gobo cannot parse code that relies on macro expansion to be valid. Any standalone expression will be formatted with a semicolon, even if the expression is a macro.
+> [!WARNING]
+> Don't complain if you've skipped this section.
+
+### `#macro`
+
+GoboCat cannot parse code that relies on macro expansion to be valid. Any standalone expression will be formatted with a semicolon, even if the expression is a macro.
 ```js
 THESE_MACROS;
 ARE.VALID;
 BECAUSE_THEY_ARE_EXPRESSIONS()
 ```
 
-## How does it work?
+## How it works
 
-Gobo is written in C# and compiles to a self-contained binary using Native AOT in .NET 8.
+GoboCat is written in C# and compiles to a self-contained binary using Native AOT in .NET 8.
 
-It uses a custom GML parser to read your code and ensure that formatted code is equivalent to the original. The parser is designed to only accept valid GML (with a few exceptions) to ensure correctness. There is no officially-documented format for GML's syntax tree, so Gobo uses a format similar to JavaScript parsers. 
+It uses a custom GML parser to generate an Abstract Syntax Tree (AST). This tree is then converted into an intermediate "Doc" format (adapted from [CSharpier](https://github.com/belav/csharpier) and Prettier) to handle line-wrapping logic and comment placement.
 
-Your code is converted into an intermediate "Doc" format to make decisions about wrapping lines and printing comments. The doc printing algorithm is taken from [CSharpier](https://github.com/belav/csharpier), which is itself adapted from Prettier.
+The parser is designed to only accept valid GML (with a few exceptions). There is no officially-documented format for GML's syntax tree, so GoboCat uses a format similar to JavaScript.
 
+GoboCat focuses on readability, consistent formatting, and reducing Git diffs. The code style is designed with these goals in mind.
+
+### Semicolons
+
+At the end of:
+- Assignments
+- Function calls
+- Increment/decrement statements (i.e. `x++`)
+- Control flow statements (i.e. `return`, `throw`, etc.)
+  - Expression statements (any expression that is not part of a statement)
+
+```js
+// semicolon behavior
+x = 123;
+call();
+x++;
+--y;
+foo;
+```
+
+### Control flow structures
+
+Control flow structures like `if`, `with` and `repeat` are always formatted with parentheses and braces:
+```js
+// before
+if true return
+
+// after
+if (true) {
+    return;
+}
+```
+
+### Empty lines
+
+GoboCat attempts to preserve empty lines between statements, following these rules:
+- Multiple empty lines are collapsed into a single empty line.
+- Empty lines at the start and end of blocks (and whole files) are removed.
+- Files always end with a single newline.
+- Top-level functions and static functions are always surrounded by empty lines.
+
+GoboCat enforces LF line endings (`\n`).
+
+### Line wrapping
+
+By default, GoboCat attempts to print expressions and statements in a single line if they fit. This goes for function calls, structs, arrays, and comma-separated `var`/`static`/`globalvar` declarations.  Blocks are never printed on a single line unless they are empty.
+
+If a list of items is too long to fit in a single line, each item is printed on its own line. The exception to this rule is function calls --- if a struct or function exists at the end of an argument list, GoboCat tries to break on the final argument first:
+```js
+// default behavior
+call(
+    x______________, 
+    y________________, 
+    z__________________, 
+    w_____________
+)
+
+// break on last argument in method()
+call(x____________, y___________, method({closure: self}, function() {
+    return;
+}));
+
+``` 
+
+
+### Comments
+
+_Warning: This behavior is subject to change!_
+
+GoboCat currently does not format the content of comments. JSDoc comment formatting may be added in the future.
+
+### Operators and Braces
+
+GML provides alternative forms for certain symbols. GoboCat standardizes these symbols according to the following table:
+
+| Symbol| Preferred Form|
+| ----------- | ----------- |
+| `==`, `=`, `:=`| `==` or `=` depending on context|
+| `!=`, `<>` | `!=`|
+| `and`, `&&` | `&&`|
+| `or`, `\|\|` | `\|\|`|
+| `xor`, `^^` | `^^`|
+|`not`, `!` | `!`|
+| `!=`, `<>` | `!=`|
+| `begin`, `{` | `{`|
+| `end`, `}` | `}`|
+|`mod`, `%` | `%`|
+
+### Empty arguments
+
+In GML, empty arguments are implicitly passed to functions as `undefined`. GoboCat trims the whitespace space between commas while enforcing a space before each non-empty argument.
+```js
+// before
+call(,,foo,);
+
+// after
+call(,, foo,);
+```
+
+### Redundant parentheses
+
+GoboCat removes redundant parentheses around certain expressions:
+```js
+// before
+var foo = ( -(((a + b))) + -(c) );
+
+// after
+var foo = -(a + b) + -c;
+```
+
+### Ignored code
+
+Write `// fmt-ignore` above a piece of code to prevent GoboCat from formatting it.
+```js
+// fmt-ignore
+x := begin /*I like my structs this way*/ end
+```
+If your code ~~abuses macros~~ requires expanded macros to be valid, place the macros inside a block starting with `// fmt-ignore` to preserve them. 
+
+Note that the ignored code must still be valid GML.
+```js
+// fmt-ignore
+{
+    ABUSE_MACROS 
+    IN_THIS
+    BLOCK
+}
+
+OTHERWISE_I_WILL;
+ADD_SEMICOLONS;
+
+// fmt-ignore
+{
+    // Won't work!
+    invalid_syntax(
+}
+```
