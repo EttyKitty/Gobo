@@ -1,8 +1,11 @@
-﻿using DocoptNet;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+
+using DocoptNet;
+
 using Gobo;
 using Gobo.Cli;
 using Gobo.Text;
-using System.Diagnostics;
 
 const string usage =
     @"Usage:
@@ -15,7 +18,6 @@ Options:
   --fast          Skip validation of formatted syntax tree and comments.
   --write-stdout  Write the results of formatting any files to stdout.
   --skip-write    Skip writing changes. Used for testing to ensure Gobo doesn't throw any errors.
-
 ";
 
 return await Docopt
@@ -47,128 +49,143 @@ static Task<int> OnError(string usage)
     return Task.FromResult(1);
 }
 
-// TODO: Clean this up...
 static async Task<int> Run(IDictionary<string, ArgValue> arguments)
 {
-    var filePath = arguments["<file-or-directory>"].ToString();
+    string filePath = arguments["<file-or-directory>"].ToString();
 
     if (!Path.Exists(filePath))
     {
-        Console.WriteLine(
-            $"{filePath} is not a valid path. Please specify a valid path to a file or directory."
-        );
+        Console.Error.WriteLine($"{filePath} is not a valid path.");
         return 1;
     }
 
-    var check = arguments["--check"].IsTrue;
-    Func<string, FormatOptions, IDictionary<string, ArgValue>, Task> processFile = check
-        ? CheckFile
-        : FormatFile;
-
+    bool isCheckMode = arguments["--check"].IsTrue;
     FormatOptions options = ConfigFileHandler.FindConfigOrDefault(filePath);
-
     const string GmlExtension = ".gml";
+
+    int failureCount = 0;
 
     if (File.Exists(filePath))
     {
-        if (Path.GetExtension(filePath) != GmlExtension)
+        if (!Path.GetExtension(filePath).Equals(GmlExtension, StringComparison.OrdinalIgnoreCase))
         {
-            Console.WriteLine($"{filePath} is not a *.gml file.");
+            Console.Error.WriteLine($"{filePath} is not a *.gml file.");
             return 1;
         }
 
-        Console.WriteLine(check ? "Checking" : "Formatting" + $" {Path.GetFileName(filePath)}...");
+        Console.WriteLine($"{(isCheckMode ? "Checking" : "Formatting")} {Path.GetFileName(filePath)}...");
 
         var stopWatch = Stopwatch.StartNew();
-        await processFile(filePath, options, arguments);
-        stopWatch.Stop();
+        bool success = await ProcessFile(filePath, options, arguments, isCheckMode);
+        if (!success)
+        {
+            failureCount++;
+        }
 
         Console.WriteLine($"Done in {stopWatch.ElapsedMilliseconds} ms");
     }
     else if (Directory.Exists(filePath))
     {
-        var files = new DirectoryInfo(filePath).EnumerateFiles(
-            $"*{GmlExtension}",
-            SearchOption.AllDirectories
-        );
+        var files = new DirectoryInfo(filePath)
+            .EnumerateFiles($"*{GmlExtension}", SearchOption.AllDirectories)
+            .ToList();
 
-        if (!files.Any())
+        if (files.Count == 0)
         {
-            Console.WriteLine($"No *{GmlExtension} files found in {filePath}");
-            return 1;
+            Console.WriteLine($"No *{GmlExtension} files found.");
+            return 0;
         }
 
-        Console.WriteLine(check ? "Checking" : "Formatting" + " files...");
+        Console.WriteLine($"{(isCheckMode ? "Checking" : "Formatting")} {files.Count} files...");
         var stopWatch = Stopwatch.StartNew();
 
-        await Task.WhenAll(files.Select(file => processFile(file.FullName, options, arguments)));
+        var concurrentFailures = new ConcurrentBag<string>();
+
+        await Parallel.ForEachAsync(files, async (file, ct) =>
+        {
+            bool success = await ProcessFile(file.FullName, options, arguments, isCheckMode);
+            if (!success)
+            {
+                concurrentFailures.Add(file.FullName);
+            }
+        });
 
         stopWatch.Stop();
+        failureCount = concurrentFailures.Count;
 
-        Console.WriteLine(
-            (check ? "Checked" : "Formatted")
-                + $" {files.Count()} files in {stopWatch.Elapsed:s\\.fff} seconds"
-        );
+        Console.WriteLine($"{(isCheckMode ? "Checked" : "Formatted")} {files.Count} files in {stopWatch.Elapsed:s\\.fff} seconds");
     }
 
-    return 0;
+    return (isCheckMode && failureCount > 0) ? 1 : 0;
+}
+
+static async Task<bool> ProcessFile(
+    string filePath,
+    FormatOptions options,
+    IDictionary<string, ArgValue> arguments,
+    bool isCheckMode)
+{
+    if (isCheckMode)
+    {
+        return await CheckFile(filePath, options, arguments);
+    }
+    else
+    {
+        await FormatFile(filePath, options, arguments);
+        return true;
+    }
 }
 
 static async Task FormatFile(
     string filePath,
     FormatOptions options,
-    IDictionary<string, ArgValue> arguments
-)
+    IDictionary<string, ArgValue> arguments)
 {
-    var input = await File.ReadAllTextAsync(filePath);
-    FormatResult result;
-
-    options.ValidateOutput = arguments["--fast"].IsFalse;
-
     try
     {
-        result = GmlFormatter.Format(input, options);
+        string input = await File.ReadAllTextAsync(filePath);
+        options.ValidateOutput = arguments["--fast"].IsFalse;
+
+        FormatResult result = GmlFormatter.Format(input, options);
+
+        if (arguments["--skip-write"].IsFalse)
+        {
+            await File.WriteAllTextAsync(filePath, result.Output);
+        }
+
+        if (arguments["--write-stdout"].IsTrue)
+        {
+            Console.WriteLine(result.Output);
+        }
     }
     catch (Exception e)
     {
-        var message = $"[Error] {filePath}\n";
-        Console.Error.WriteLine(message + e.Message);
-        return;
-    }
-
-    if (arguments["--skip-write"].IsFalse)
-    {
-        await File.WriteAllTextAsync(filePath, result.Output);
-    }
-
-    if (arguments["--write-stdout"].IsTrue)
-    {
-        Console.WriteLine(result.Output);
+        Console.Error.WriteLine($"[Error] {filePath}: {e.Message}");
     }
 }
 
-static async Task CheckFile(
+static async Task<bool> CheckFile(
     string filePath,
     FormatOptions options,
-    IDictionary<string, ArgValue> arguments
-)
+    IDictionary<string, ArgValue> arguments)
 {
-    var input = SourceText.From(await File.ReadAllTextAsync(filePath));
-    bool success;
-
     try
     {
-        success = GmlFormatter.Check(input, options);
+        string text = await File.ReadAllTextAsync(filePath);
+        var input = SourceText.From(text);
+        bool isFormatted = GmlFormatter.Check(input, options);
+
+        if (!isFormatted)
+        {
+            Console.WriteLine($"[Warn] {filePath} is not formatted.");
+            return false;
+        }
+
+        return true;
     }
     catch (Exception e)
     {
-        var message = $"[Error] {filePath}\n";
-        Console.Error.WriteLine(message + e.Message);
-        return;
-    }
-
-    if (!success)
-    {
-        Console.WriteLine($"[Warn] {filePath}");
+        Console.Error.WriteLine($"[Error] {filePath}: {e.Message}");
+        return false;
     }
 }
