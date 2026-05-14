@@ -16,8 +16,6 @@ By using GoboCat, you agree to cede control over the nitty-gritty details of for
 
 This fork maintains the core "Option Philosophy" of Prettier but introduces specific toggles for common GML stylistic preferences that the original project restricted.
 
-### Key Differences
-
 - **Expanded Configuration:** Adds toggles for vertical formatting and block spacing.
   - **Context-Aware Verticality:** New options for structs and arrays specifically target variable initialization to keep declarations clean without bloating inline logic.
 - **Modernized Array Accessors:** Automatically converts legacy multi-index arrays `array[0, 2]` to modern chained accessors `array[0][2]`.
@@ -31,7 +29,6 @@ do begin
 ;;;;show_debug_message(i)
 ;;;;i++
 end until not i < 10 return
-
 call()
 
 // Output
@@ -51,9 +48,47 @@ do {
 return call();
 ```
 
+## Usage
+
+### Basic Commands
+
+**Format a single file:**
+```bash
+gobo ./scripts/PlayerMovement.gml
+```
+
+**Format an entire directory (recursive):**
+```bash
+gobo ./src/scripts
+```
+
+**Check if files are formatted (CI/CD):**
+Use this in GitHub Actions or build scripts. It will return a non-zero exit code if any files need formatting without actually changing them.
+```bash
+gobo --check ./src
+```
+
+### Options Reference
+
+| Option | Description |
+| :--- | :--- |
+| `-h`, `--help` | Show all available commands. |
+| `--check` | Validates formatting. Does **not** write changes to files. |
+| `--fast` | Skips heavy validation. Use this if you have thousands of files and trust the output. |
+| `--write-stdout` | Prints the formatted code to the terminal instead of saving to the file. |
+| `--skip-write` | Dry run. Processes everything but doesn't touch your files. |
+
+### Tips
+
+- **Ignore Folders:** Gobo automatically ignores `node_modules`, `extensions`, `.git`, `.svn`, `prefabs`, `bin`, and `obj` folders to keep your scans fast.
+- **Automation:** Run `gobo --check .` in your Pull Request pipeline to ensure no unformatted code ever hits your main branch.
+
 ## Configuration
 
-GoboCat searches for a `.goborc.json` file starting from the directory of the file being formatted and searching up through parent directories. This allows you to have a global configuration at your project root and overrides in specific subdirectories.
+> [!WARNING]
+> GoboCat uses strict JSON parsing. Ensure that there are no missing commas and all property names are double-quoted.
+
+GoboCat searches for a `.goborc.json` file starting from the directory of the file being formatted and searching up through parent directories. This allows you to have a global configuration at your project root and overrides in specific subdirectories. If no config was found, default options are used.
 
 ### Example `.goborc.json`
 
@@ -63,16 +98,6 @@ GoboCat searches for a `.goborc.json` file starting from the directory of the fi
   "useTabs": true
 }
 ```
-
-> [!WARNING]
-> GoboCat uses strict JSON parsing. Ensure there are no trailing commas and that all property names are double-quoted.
-
-### Resolution Logic
-
-1. Find the file to be formatted.
-2. Look in the current directory for `.goborc.json`.
-3. If not found, move to the parent directory and repeat.
-4. If no file is found after reaching the drive root, default settings are applied.
 
 ### Options
 
