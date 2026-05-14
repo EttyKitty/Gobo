@@ -1,9 +1,9 @@
 {
   "mainAssemblyName": "Gobo.Playground",
   "resources": {
-    "hash": "sha256-jbA6lPE6D1MJ35rpPI7MvyETDfgjyfrCatrwoVoBaaw=",
+    "hash": "sha256-up5/v+vQ9j8Zan+rK2E+TRVSaLaxXYKZRGwCx0XYEwU=",
     "fingerprinting": {
-      "Gobo.Playground.ddsqatehmu.wasm": "Gobo.Playground.wasm",
+      "Gobo.Playground.21ebmh5jwk.wasm": "Gobo.Playground.wasm",
       "Microsoft.AspNetCore.Components.Web.9ywlbodhai.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.8bgf3h7zzy.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
       "Microsoft.AspNetCore.Components.uc30c34nb3.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -36,8 +36,8 @@
       "System.Text.Encodings.Web.funmbj3tve.wasm": "System.Text.Encodings.Web.wasm",
       "System.Text.Json.zcbgrnwt2x.wasm": "System.Text.Json.wasm",
       "System.Text.RegularExpressions.ivnnkacsm3.wasm": "System.Text.RegularExpressions.wasm",
-      "gobolib.rsuunec6bg.wasm": "gobolib.wasm",
-      "dotnet.native.rf1k7uo3aq.wasm": "dotnet.native.wasm",
+      "gobolib.xbhxi00rim.wasm": "gobolib.wasm",
+      "dotnet.native.n6q869yog0.wasm": "dotnet.native.wasm",
       "dotnet.native.ol2ce82pp8.js": "dotnet.native.js",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.dstopyvqzi.js": "dotnet.runtime.js"
@@ -49,10 +49,10 @@
       "dotnet.runtime.dstopyvqzi.js": "sha256-zZ0MGlWZF0pG99PvNYvOdUvox/BZe6pddrswXlZoKyc="
     },
     "wasmNative": {
-      "dotnet.native.rf1k7uo3aq.wasm": "sha256-RyMXdT6s8MIZEPZ47Tf/gPkIo+VmQWFAiIhoCn9EXCA="
+      "dotnet.native.n6q869yog0.wasm": "sha256-j+BFzTpX3K0g8dXLfiXZDy9vMSBENHVQbiG8xLbLgJI="
     },
     "coreAssembly": {
-      "Gobo.Playground.ddsqatehmu.wasm": "sha256-IRCL+cCEd30fFN+/+qbBr/noveDRumEuRHwGaxvuEvw=",
+      "Gobo.Playground.21ebmh5jwk.wasm": "sha256-xuXKjRQfPsNeufTq+WTADEBsYxrrw9db7tIrLOmnwkc=",
       "Microsoft.AspNetCore.Components.Web.9ywlbodhai.wasm": "sha256-7wp/nPD1MR2pfYCnDh3kSogXnnLU9wp+F1V4ir6sjxw=",
       "Microsoft.AspNetCore.Components.WebAssembly.8bgf3h7zzy.wasm": "sha256-rAh8nWGBCVWFU1ifzsvsWmL3epaj09/Fd8prA7yhAYQ=",
       "Microsoft.AspNetCore.Components.uc30c34nb3.wasm": "sha256-AnexbclRr7eROKlrA9fPfIPN+3hmRCetl000NcVdH84=",
@@ -85,7 +85,7 @@
       "System.Text.Encodings.Web.funmbj3tve.wasm": "sha256-N6mlP3vuOlRlbb7wXFxNoEYkHYzYL55WYRZF8haFmbI=",
       "System.Text.Json.zcbgrnwt2x.wasm": "sha256-g5TJ/lA0BOoUjlpneA18xNFBLlbYe1YxyZX0NmRNaYM=",
       "System.Text.RegularExpressions.ivnnkacsm3.wasm": "sha256-npQRvW1Klmpyny2Arj4qHxURCxLg6KDL42GFqYFjdxw=",
-      "gobolib.rsuunec6bg.wasm": "sha256-lVlC/y/1IJjixARfyTX+d47WzKAtYlb9VDbS9CAcZu8="
+      "gobolib.xbhxi00rim.wasm": "sha256-/ef/fDlIhbtuKRK4VEB4eX66wOFEZcffSfxhY2owqdI="
     },
     "assembly": {}
   },
