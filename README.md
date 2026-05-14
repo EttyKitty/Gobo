@@ -111,6 +111,7 @@ The following configuration options are available:
 | `flatExpressions` | `false` | Prevents expressions from wrapping, regardless of `maxLineWidth`. |
 | `verticalStructs` | `true` | Forces struct members onto new lines during variable initialization. |
 | `verticalArrays` | `true` | Forces array elements onto new lines during variable initialization (ignores 1-length arrays). |
+| `multilineTernary` | `false` | Forces conditional (ternary) expressions onto multiple lines (ESLint `multiline-ternary`). |
 | `limitWidth` | `false` | Toggle for `maxLineWidth` enforcement. |
 | `blankLineAfterBlocks` | `true` | Injects a blank line after `}` if followed by another statement (IDE2003 style). |
 
@@ -187,9 +188,9 @@ If a list of items is too long to fit in a single line, each item is printed on 
 ```js
 // default behavior
 call(
-    x______________, 
-    y________________, 
-    z__________________, 
+    x______________,
+    y________________,
+    z__________________,
     w_____________
 )
 
@@ -198,7 +199,7 @@ call(x____________, y___________, method({closure: self}, function() {
     return;
 }));
 
-``` 
+```
 
 
 ### Comments
@@ -253,13 +254,13 @@ Write `// fmt-ignore` above a piece of code to prevent GoboCat from formatting i
 // fmt-ignore
 x := begin /*I like my structs this way*/ end
 ```
-If your code ~~abuses macros~~ requires expanded macros to be valid, place the macros inside a block starting with `// fmt-ignore` to preserve them. 
+If your code ~~abuses macros~~ requires expanded macros to be valid, place the macros inside a block starting with `// fmt-ignore` to preserve them.
 
 Note that the ignored code must still be valid GML.
 ```js
 // fmt-ignore
 {
-    ABUSE_MACROS 
+    ABUSE_MACROS
     IN_THIS
     BLOCK
 }

@@ -23,13 +23,15 @@ internal sealed class ConditionalExpression : GmlSyntaxNode
 
     public override Doc PrintNode(PrintContext ctx)
     {
+        LineDoc lineBreak = ctx.Options.MultilineTernary ? Doc.HardLine : Doc.Line;
+
         Doc[] innerContents =
         {
-            Doc.Line,
+            lineBreak,
             "?",
             " ",
             Doc.Concat(WhenTrue.Print(ctx)),
-            Doc.Line,
+            lineBreak,
             ":",
             " ",
             Doc.Concat(WhenFalse.Print(ctx))

@@ -17,6 +17,7 @@ public record FormatOptions
     public bool FlatExpressions { get; set; } = false;
     public bool VerticalStructs { get; set; } = true;
     public bool VerticalArrays { get; set; } = true;
+    public bool MultilineTernary { get; set; } = false;
     public bool LimitWidth { get; set; } = false;
     public bool BlankLineAfterBlocks { get; set; } = false;
 

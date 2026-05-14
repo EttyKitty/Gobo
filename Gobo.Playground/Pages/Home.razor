@@ -86,6 +86,15 @@
         <label for="verticalArrays" class="text-light form-check-label">Vertical Arrays</label>
     </div>
 
+    <div class="form-check" title="If checked, enforces newlines between the operands of a ternary expression.">
+        <input type="checkbox"
+            class="form-check-input"
+            id="multilineTernary"
+            @bind="_formatOptions.MultilineTernary"
+            @bind:after="RequestUpdate" />
+        <label for="multilineTernary" class="text-light form-check-label">Vertical Conditionals</label>
+    </div>
+
         <div class="form-check" title="Insert a blank line between a block statement and any subsequent statement at the same scope level.">
             <input type="checkbox"
                 class="form-check-input"
@@ -179,10 +188,10 @@ call()";
         _isDisposed = true;
         if (_cts != null)
         {
-            try 
-            { 
+            try
+            {
                 _cts.Cancel();
-            } 
+            }
             catch { }
             _cts.Dispose();
             _cts = null;
@@ -203,7 +212,7 @@ call()";
         if (inputEditor != null) tasks.Add(inputEditor.SetWidth(width));
         if (outputEditor != null) tasks.Add(outputEditor.SetWidth(width));
         if (_showAst && astEditor != null) tasks.Add(astEditor.SetWidth(width));
-        
+
         await Task.WhenAll(tasks);
     }
 
@@ -214,7 +223,7 @@ call()";
             _astPanelOpened = true;
         }
 
-        await RequestUpdate(); 
+        await RequestUpdate();
     }
 
     Task OnInputChanged(string input)
@@ -231,16 +240,16 @@ call()";
         if (_cts != null)
         {
             var oldCts = _cts;
-            _cts = null; 
+            _cts = null;
 
-            try 
-            { 
-                await oldCts.CancelAsync(); 
-            } 
+            try
+            {
+                await oldCts.CancelAsync();
+            }
             catch { /* Ignore */ }
-            finally 
-            { 
-                oldCts.Dispose(); 
+            finally
+            {
+                oldCts.Dispose();
             }
         }
 
@@ -249,7 +258,7 @@ call()";
             if (outputEditor != null) await outputEditor.SetText("");
             return;
         }
-        
+
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
 
@@ -268,9 +277,9 @@ call()";
             }
 
             var options = _formatOptions with { };
-            
+
             var result = await Task.Run(() => GmlFormatter.Format(_input, options), token);
-            
+
             if (token.IsCancellationRequested) return;
 
             if (result != null)
@@ -291,14 +300,14 @@ call()";
         catch (OperationCanceledException) { /* Ignore */ }
         catch (Exception e)
         {
-            try 
+            try
             {
                 if (outputEditor != null)
                 {
                     await outputEditor.SetLanguage("text");
                     await outputEditor.SetText("❌ " + e.Message);
                 }
-            } 
+            }
             catch { /* Ignore */ }
         }
     }
