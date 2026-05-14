@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace Gobo.Cli;
 
@@ -6,14 +7,14 @@ public static class ConfigFileHandler
 {
     private const string ConfigFileName = ".goborc.json";
 
-    public static bool TryFindConfigFile(string filePath, out string configFilePath)
+    public static bool TryFindConfigFile(string filePath, [NotNullWhen(true)] out string? configFilePath)
     {
-        string? currentPath = filePath;
+        string absolutePath = Path.GetFullPath(filePath);
+        string? current = File.Exists(absolutePath) ? Path.GetDirectoryName(absolutePath) : absolutePath;
 
-        // Start searching from the current directory and move up to the root directory
-        while (!string.IsNullOrEmpty(currentPath))
+        while (current is not null)
         {
-            var potentialConfigPath = Path.Combine(currentPath, ConfigFileName);
+            string potentialConfigPath = Path.Combine(current, ConfigFileName);
 
             if (File.Exists(potentialConfigPath))
             {
@@ -21,39 +22,39 @@ public static class ConfigFileHandler
                 return true;
             }
 
-            currentPath = Directory.GetParent(currentPath)?.FullName;
+            current = Path.GetDirectoryName(current);
         }
 
-        configFilePath = string.Empty;
+        configFilePath = null;
         return false;
     }
 
     public static FormatOptions FindConfigOrDefault(string filePath)
     {
-        if (TryFindConfigFile(filePath, out var configPath))
-        {
-            var json = File.ReadAllText(configPath);
-            FormatOptions result;
-
-            try
-            {
-                result =
-                    JsonSerializer.Deserialize(json, FormatOptionsSerializer.Default.FormatOptions)
-                    ?? FormatOptions.Default;
-            }
-            catch (JsonException)
-            {
-                Console.Error.WriteLine(
-                    $"[Error] {filePath}\nOptions file could not be parsed. Falling back to default settings."
-                );
-                return FormatOptions.Default;
-            }
-
-            return result;
-        }
-        else
+        if (!TryFindConfigFile(filePath, out string? configPath))
         {
             return FormatOptions.Default;
+        }
+
+        try
+        {
+            ReadOnlySpan<byte> data = File.ReadAllBytes(configPath);
+
+            return JsonSerializer.Deserialize(data, FormatOptionsSerializer.Default.FormatOptions) ?? FormatOptions.Default;
+        }
+        catch (JsonException ex)
+        {
+            Console.Error.WriteLine(
+                $"[Error] Failed to parse config at: {configPath}\n" +
+                $"Reason: {ex.Message}\n" +
+                "Falling back to default settings."
+            );
+            return FormatOptions.Default;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[Critical] Unexpected error reading config: {ex.Message}");
+            throw;
         }
     }
 }
