@@ -74,7 +74,47 @@ jobs:
           path: ./artifacts
           merge-multiple: true
 
+      - id: build_changelog
+        name: Build Changelog
+        uses: mikepenz/release-changelog-builder-action@v6.2.1
+        with:
+          mode: "COMMIT"
+          toTag: ${{ github.sha }}
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n**Changed Lines:** #{{CHANGES}}\n**Full Changelog:** #{{RELEASE_DIFF}}",
+              "commit_template": "- [#{{TITLE}}](https://github.com/Adeptus-Dominus/ChapterMaster/commit/#{{MERGE_SHA}}) by @#{{AUTHOR}}",
+              "sort": {
+                "order": "ASC",
+                "on_property": "mergedAt"
+              },
+              "categories": [
+                {
+                    "title": "### Features",
+                    "labels": ["feat"]
+                },
+                {
+                    "title": "### Fixes",
+                    "labels": ["fix"]
+                },
+                {
+                    "title": "### Other",
+                    "labels": []
+                }
+              ],
+              "label_extractor": [
+                {
+                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|merge){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
+                  "on_property": "title",
+                  "target": "$1"
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          body: ${{steps.build_changelog.outputs.changelog}}
           files: ./artifacts/*.zip
