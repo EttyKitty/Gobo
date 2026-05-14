@@ -87,15 +87,16 @@ static async Task<int> Run(IDictionary<string, ArgValue> arguments)
     else if (Directory.Exists(filePath))
     {
         string[] ignorePatterns = ["node_modules", "extensions", ".git", ".svn", "prefabs", "bin", "obj"];
-
         var files = new DirectoryInfo(filePath)
             .EnumerateFiles($"*{GmlExtension}", SearchOption.AllDirectories)
-            .Where(f => !ignorePatterns.Any(p => f.FullName.Contains(p, StringComparison.OrdinalIgnoreCase)))
+            .Where(f => !Path.GetRelativePath(filePath, f.FullName)
+                .Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar])
+                .Any(segment => ignorePatterns.Contains(segment, StringComparer.OrdinalIgnoreCase)))
             .ToList();
 
         if (files.Count == 0)
         {
-            Console.WriteLine($"No *{GmlExtension} files found.");
+            Console.WriteLine($"No *{GmlExtension} files found in {filePath}");
             return 0;
         }
 
