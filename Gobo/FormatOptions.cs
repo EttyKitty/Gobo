@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gobo;
 
@@ -36,6 +37,6 @@ public record FormatOptions
     public static FormatOptions Default { get; } = new();
 }
 
-[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true, AllowTrailingCommas = true, ReadCommentHandling = JsonCommentHandling.Skip)]
 [JsonSerializable(typeof(FormatOptions))]
 public partial class FormatOptionsSerializer : JsonSerializerContext { }
