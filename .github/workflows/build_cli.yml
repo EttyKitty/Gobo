@@ -17,12 +17,12 @@ jobs:
         include:
           - os: ubuntu-latest
             rid: linux-x64
-            artifact: gobo-linux
-            zip: gobo-linux.zip
+            artifact: gobo-linux-x64
+            zip: gobo-linux-x64.zip
           - os: windows-latest
             rid: win-x64
-            artifact: gobo-windows
-            zip: gobo-windows.zip
+            artifact: gobo-windows-x64
+            zip: gobo-windows-x64.zip
           - os: macos-latest
             rid: osx-arm64
             artifact: gobo-macos-arm64
@@ -58,6 +58,7 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: ./${{ matrix.zip }}
+          if-no-files-found: error
 
   release:
     needs: build
