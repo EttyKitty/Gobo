@@ -1,4 +1,4 @@
-﻿using Gobo.Printer.DocTypes;
+using Gobo.Printer.DocTypes;
 using Gobo.SyntaxNodes.Gml.Literals;
 
 namespace Gobo.SyntaxNodes.Gml;
@@ -10,6 +10,11 @@ internal class UndefinedArgument : GmlSyntaxNode
 
     public override Doc PrintNode(PrintContext ctx)
     {
+        if (ctx.Options.ExplicitUndefined)
+        {
+            return "undefined";
+        }
+
         return Doc.TrimHorizontal;
     }
 

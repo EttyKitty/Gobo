@@ -8,92 +8,92 @@
 
         <h5 class="text-light">Gobo Playground</h5>
 
-    <div class="form-check pt-2" title="If checked, the line width will be limited.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="limitWidth"
-            @bind="_formatOptions.LimitWidth"
-            @bind:after="RequestUpdate" />
-        <label for="limitWidth" class="text-light form-check-label">Limit Width</label>
-    </div>
-
-    @if (_formatOptions.LimitWidth)
-    {
-        <div class="mb-3" title="Max line width. -1 to disable.">
-            <label for="maxLineWidth" class="form-label text-light">Max Line Width</label>
-            <input type="number"
-                class="form-control form-control-sm"
-                id="maxLineWidth"
-                @bind="_formatOptions.MaxLineWidth"
+        <div class="form-check pt-2" title="If checked, the line width will be limited.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="limitWidth"
+                @bind="_formatOptions.LimitWidth"
                 @bind:after="RequestUpdate" />
+            <label for="limitWidth" class="text-light form-check-label">Limit Width</label>
         </div>
-    }
 
-    <div class="form-check pt-2" title="If checked, tabs will be used for indentation instead of spaces.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="useTabs"
-            @bind="_formatOptions.UseTabs"
-            @bind:after="RequestUpdate" />
-        <label for="useTabs" class="text-light form-check-label">Use Tabs</label>
-    </div>
+        @if (_formatOptions.LimitWidth)
+        {
+            <div class="mb-3" title="Max line width. -1 to disable.">
+                <label for="maxLineWidth" class="form-label text-light">Max Line Width</label>
+                <input type="number"
+                    class="form-control form-control-sm"
+                    id="maxLineWidth"
+                    @bind="_formatOptions.MaxLineWidth"
+                    @bind:after="RequestUpdate" />
+            </div>
+        }
 
-    @if (!_formatOptions.UseTabs)
-    {
-        <div class="pb-2 pt-1">
-            <label for="tabWidth" class="text-light">Tab Width</label>
-            <input type="number"
-                class="form-control form-control-sm"
-                id="tabWidth"
-                @bind="_formatOptions.TabWidth"
+        <div class="form-check pt-2" title="If checked, tabs will be used for indentation instead of spaces.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="useTabs"
+                @bind="_formatOptions.UseTabs"
                 @bind:after="RequestUpdate" />
+            <label for="useTabs" class="text-light form-check-label">Use Tabs</label>
         </div>
-    }
 
-    <div class="form-check">
-        <input type="checkbox"
-            class="form-check-input"
-            id="showAst"
-            @bind="_showAst"
-            @bind:after="OnShowAstChanged" />
-        <label for="showAst" class="text-light form-check-label">Show AST</label>
-    </div>
+        @if (!_formatOptions.UseTabs)
+        {
+            <div class="pb-2 pt-1">
+                <label for="tabWidth" class="text-light">Tab Width</label>
+                <input type="number"
+                    class="form-control form-control-sm"
+                    id="tabWidth"
+                    @bind="_formatOptions.TabWidth"
+                    @bind:after="RequestUpdate" />
+            </div>
+        }
 
-    <div class="form-check" title="If checked, expressions will always be formatted horizontally.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="flatExpressions"
-            @bind="_formatOptions.FlatExpressions"
-            @bind:after="RequestUpdate" />
-        <label for="flatExpressions" class="text-light form-check-label">Flat Expressions</label>
-    </div>
+        <div class="form-check">
+            <input type="checkbox"
+                class="form-check-input"
+                id="showAst"
+                @bind="_showAst"
+                @bind:after="OnShowAstChanged" />
+            <label for="showAst" class="text-light form-check-label">Show AST</label>
+        </div>
 
-    <div class="form-check" title="If checked, structs will always be formatted vertically.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="verticalStructs"
-            @bind="_formatOptions.VerticalStructs"
-            @bind:after="RequestUpdate" />
-        <label for="verticalStructs" class="text-light form-check-label">Vertical Structs</label>
-    </div>
+        <div class="form-check" title="If checked, expressions will always be formatted horizontally.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="flatExpressions"
+                @bind="_formatOptions.FlatExpressions"
+                @bind:after="RequestUpdate" />
+            <label for="flatExpressions" class="text-light form-check-label">Flat Expressions</label>
+        </div>
 
-    <div class="form-check" title="If checked, arrays will always be formatted vertically.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="verticalArrays"
-            @bind="_formatOptions.VerticalArrays"
-            @bind:after="RequestUpdate" />
-        <label for="verticalArrays" class="text-light form-check-label">Vertical Arrays</label>
-    </div>
+        <div class="form-check" title="If checked, structs will always be formatted vertically.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="verticalStructs"
+                @bind="_formatOptions.VerticalStructs"
+                @bind:after="RequestUpdate" />
+            <label for="verticalStructs" class="text-light form-check-label">Vertical Structs</label>
+        </div>
 
-    <div class="form-check" title="If checked, enforces newlines between the operands of a ternary expression.">
-        <input type="checkbox"
-            class="form-check-input"
-            id="multilineTernary"
-            @bind="_formatOptions.MultilineTernary"
-            @bind:after="RequestUpdate" />
-        <label for="multilineTernary" class="text-light form-check-label">Vertical Conditionals</label>
-    </div>
+        <div class="form-check" title="If checked, arrays will always be formatted vertically.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="verticalArrays"
+                @bind="_formatOptions.VerticalArrays"
+                @bind:after="RequestUpdate" />
+            <label for="verticalArrays" class="text-light form-check-label">Vertical Arrays</label>
+        </div>
+
+        <div class="form-check" title="If checked, enforces newlines between the operands of a ternary expression.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="multilineTernary"
+                @bind="_formatOptions.MultilineTernary"
+                @bind:after="RequestUpdate" />
+            <label for="multilineTernary" class="text-light form-check-label">Vertical Conditionals</label>
+        </div>
 
         <div class="form-check" title="Insert a blank line between a block statement and any subsequent statement at the same scope level.">
             <input type="checkbox"
@@ -101,9 +101,16 @@
                 id="blankLineAfterBlocks"
                 @bind="_formatOptions.BlankLineAfterBlocks"
                 @bind:after="RequestUpdate" />
-            <label for="blankLineAfterBlocks" class="text-light form-check-label">
-                \n After Blocks
-            </label>
+            <label for="blankLineAfterBlocks" class="text-light form-check-label">\n After Blocks</label>
+        </div>
+
+        <div class="form-check" title="Replaces empty arguments in function calls with explicit `undefined` keyword.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="explicitUndefined"
+                @bind="_formatOptions.ExplicitUndefined"
+                @bind:after="RequestUpdate" />
+            <label for="explicitUndefined" class="text-light form-check-label">Explicit Undefined</label>
         </div>
 
         <a class="btn btn-outline-light mt-auto" href="https://github.com/ettykitty/Gobo" target="_blank">

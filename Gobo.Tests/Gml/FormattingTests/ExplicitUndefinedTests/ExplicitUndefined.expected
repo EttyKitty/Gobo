@@ -1,0 +1,9 @@
+call(undefined, undefined, foo);
+
+call(undefined, bar, undefined);
+
+call(undefined, /*comment*/ undefined, undefined);
+
+call();
+
+call(undefined, undefined, undefined);

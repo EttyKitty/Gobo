@@ -112,6 +112,7 @@ The following configuration options are available:
 | `multilineTernary` | `false` | Forces conditional (ternary) expressions onto multiple lines (ESLint `multiline-ternary`). |
 | `limitWidth` | `false` | Toggle for `maxLineWidth` enforcement. |
 | `blankLineAfterBlocks` | `true` | Injects a blank line after `}` if followed by another statement (IDE2003 style). |
+| `explicitUndefined` | `false` | Replaces empty arguments in function calls with explicit `undefined` keyword. |
 
 ## Limitations
 
@@ -235,13 +236,22 @@ GML provides alternative forms for certain symbols. GoboCat standardizes these s
 
 ### Empty arguments
 
-In GML, empty arguments are implicitly passed to functions as `undefined`. GoboCat trims the whitespace space between commas while enforcing a space before each non-empty argument.
+In GML, empty arguments are implicitly passed to functions as `undefined`. GoboCat trims whitespace between commas while enforcing a space before each non-empty argument.
 ```js
 // before
 call(,,foo,);
 
 // after
 call(,, foo,);
+```
+
+With the `explicitUndefined` option enabled, empty arguments are replaced with the literal `undefined` keyword:
+```js
+// before
+call(,,foo,);
+
+// after (explicitUndefined: true)
+call(undefined, undefined, foo);
 ```
 
 ### Redundant parentheses

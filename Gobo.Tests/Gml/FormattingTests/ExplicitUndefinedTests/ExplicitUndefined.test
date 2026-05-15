@@ -1,0 +1,9 @@
+call(,, foo)
+
+call(, bar,)
+
+call(, /*comment*/ ,)
+
+call()
+
+call(,,)
