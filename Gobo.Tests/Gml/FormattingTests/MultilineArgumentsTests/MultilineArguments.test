@@ -9,3 +9,15 @@ call(a, b, c, d, e, f);
 call(function() {}, function() {});
 
 nested(call(a, b, c), call(d, e, f));
+
+call(,, foo)
+
+call(, foo,)
+
+call(, /*comment*/ ,)
+
+call(, foo /*comment*/ ,)
+
+call()
+
+call(,,)

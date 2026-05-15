@@ -34,3 +34,25 @@ nested(
         f
     )
 );
+
+call(
+    ,
+    ,
+    foo
+);
+
+call(
+    ,
+    foo
+);
+
+call(/*comment*/);
+
+call(
+    ,
+    foo /*comment*/
+);
+
+call();
+
+call();

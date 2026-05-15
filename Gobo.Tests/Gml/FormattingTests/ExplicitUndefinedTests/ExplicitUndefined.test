@@ -1,8 +1,10 @@
 call(,, foo)
 
-call(, bar,)
+call(, foo,)
 
 call(, /*comment*/ ,)
+
+call(, foo /*comment*/ ,)
 
 call()
 
