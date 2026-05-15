@@ -1,4 +1,4 @@
-﻿using Gobo.Printer.DocTypes;
+using Gobo.Printer.DocTypes;
 using Gobo.SyntaxNodes.PrintHelpers;
 
 namespace Gobo.SyntaxNodes.Gml;
@@ -25,7 +25,11 @@ internal sealed class ArgumentList : GmlSyntaxNode
             return EmptyArguments;
         }
 
-        if (ShouldBreakOnLastArgument())
+        if (ctx.Options.MultilineArguments && Children.Count > 1)
+        {
+            result = DelimitedList.PrintInBrackets(ctx, "(", this, ")", ",", forceBreak: true);
+        }
+        else if (ShouldBreakOnLastArgument())
         {
             var printedArguments = PrintChildren(ctx);
 

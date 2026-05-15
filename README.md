@@ -113,6 +113,7 @@ The following configuration options are available:
 | `limitWidth` | `false` | Toggle for `maxLineWidth` enforcement. |
 | `blankLineAfterBlocks` | `true` | Injects a blank line after `}` if followed by another statement (IDE2003 style). |
 | `explicitUndefined` | `false` | Replaces empty arguments in function calls with explicit `undefined` keyword. |
+| `multilineArguments` | `false` | Forces all function arguments onto new lines, regardless of line width. |
 
 ## Limitations
 

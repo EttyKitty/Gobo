@@ -21,6 +21,7 @@ public record FormatOptions
     public bool LimitWidth { get; set; } = false;
     public bool BlankLineAfterBlocks { get; set; } = false;
     public bool ExplicitUndefined { get; set; } = false;
+    public bool MultilineArguments { get; set; } = false;
 
     [JsonIgnore]
     public BraceStyle BraceStyle { get; set; } = BraceStyle.SameLine;

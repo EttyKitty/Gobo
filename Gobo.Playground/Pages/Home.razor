@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @implements IDisposable
 @using Gobo;
 @using Gobo.Playground.Shared;
@@ -111,6 +111,15 @@
                 @bind="_formatOptions.ExplicitUndefined"
                 @bind:after="RequestUpdate" />
             <label for="explicitUndefined" class="text-light form-check-label">Explicit Undefined</label>
+        </div>
+
+        <div class="form-check" title="Forces all function arguments onto new lines, regardless of line width.">
+            <input type="checkbox"
+                class="form-check-input"
+                id="multilineArguments"
+                @bind="_formatOptions.MultilineArguments"
+                @bind:after="RequestUpdate" />
+            <label for="multilineArguments" class="text-light form-check-label">Multiline Arguments</label>
         </div>
 
         <a class="btn btn-outline-light mt-auto" href="https://github.com/ettykitty/Gobo" target="_blank">

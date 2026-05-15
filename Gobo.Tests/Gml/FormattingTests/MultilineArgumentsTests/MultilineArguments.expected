@@ -1,0 +1,36 @@
+call(
+    dod,
+    bar,
+    foo
+);
+
+call(a);
+
+call();
+
+call(
+    a,
+    b,
+    c,
+    d,
+    e,
+    f
+);
+
+call(
+    function() {},
+    function() {}
+);
+
+nested(
+    call(
+        a,
+        b,
+        c
+    ),
+    call(
+        d,
+        e,
+        f
+    )
+);
