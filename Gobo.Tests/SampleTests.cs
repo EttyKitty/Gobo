@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Data;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Gobo.Tests;
@@ -11,17 +9,8 @@ namespace Gobo.Tests;
 /// </summary>
 public class SampleTests
 {
-    private readonly FormatOptions options = FormatOptions.DefaultTestOptions;
-
-    private readonly ITestOutputHelper output;
-
     public const string TestFileExtension = ".test";
     public const string ActualFileExtension = ".actual";
-
-    public SampleTests(ITestOutputHelper output)
-    {
-        this.output = output;
-    }
 
     [Theory]
     [ClassData(typeof(SampleFileProvider))]
@@ -31,24 +20,19 @@ public class SampleTests
 
         var input = await File.ReadAllTextAsync(filePath);
 
-        var firstPass = GmlFormatter.Format(input, options);
+        var firstPass = GmlFormatter.Format(input, test.Options);
 
-        output.WriteLine($"Parse: {firstPass.ParseTimeMs}");
-        output.WriteLine($"Format: {firstPass.FormatTimeMs}");
-        output.WriteLine($"Total: {firstPass.TotalTimeMs}");
-
-        var secondPass = GmlFormatter.Format(firstPass.Output, options);
+        var secondPass = GmlFormatter.Format(firstPass.Output, test.Options);
 
         var secondDiff = StringDiffer.PrintFirstDifference(firstPass.Output, secondPass.Output);
         if (secondDiff != string.Empty)
         {
-            throw new XunitException($"Second pass:\n{secondDiff}");
+            await File.WriteAllTextAsync(
+                filePath.Replace(TestFileExtension, ActualFileExtension),
+                firstPass.Output
+            );
+            throw new XunitException($"Second pass instability for '{test.Name}':\n{secondDiff}");
         }
-
-        await File.WriteAllTextAsync(
-            filePath.Replace(TestFileExtension, ActualFileExtension),
-            firstPass.Output
-        );
     }
 }
 
@@ -60,9 +44,10 @@ public class SampleFileProvider : IEnumerable<object[]>
 
     public IEnumerator<object[]> GetEnumerator()
     {
-        var filePath = Path.Combine(rootDirectory.FullName, "Gml", "Samples");
-        var files = Directory.EnumerateFiles(filePath, $"*{SampleTests.TestFileExtension}");
-        return files.Select(fp => new object[] { new TestFile(fp) }).GetEnumerator();
+        var directoryPath = Path.Combine(rootDirectory.FullName, "Gml", "Samples");
+        var options = ConfigFileHandler.FindConfigOrDefault(directoryPath);
+        var files = Directory.EnumerateFiles(directoryPath, $"*{SampleTests.TestFileExtension}");
+        return files.Select(fp => new object[] { new TestFile(fp, options) }).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

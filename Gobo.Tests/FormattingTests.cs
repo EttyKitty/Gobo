@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Data;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Gobo.Tests;
@@ -10,18 +8,9 @@ namespace Gobo.Tests;
 /// </summary>
 public class FormattingTests
 {
-    private readonly FormatOptions options = FormatOptions.DefaultTestOptions;
-
-    private readonly ITestOutputHelper output;
-
     public const string TestFileExtension = ".test";
     public const string ExpectedFileExtension = ".expected";
     public const string ActualFileExtension = ".actual";
-
-    public FormattingTests(ITestOutputHelper output)
-    {
-        this.output = output;
-    }
 
     [Theory]
     [ClassData(typeof(FormattingTestProvider))]
@@ -43,13 +32,8 @@ public class FormattingTests
 
         var input = await File.ReadAllTextAsync(testFilePath);
 
-        var firstPass = GmlFormatter.Format(input, options);
+        var firstPass = GmlFormatter.Format(input, test.Options);
 
-        output.WriteLine(firstPass.ToString());
-
-        await File.WriteAllTextAsync(actualFilePath, firstPass.Output);
-
-        // Normalize line endings in case they are added manually on windows
         var expectedOutput = (await File.ReadAllTextAsync(expectedFilePath)).ReplaceLineEndings(
             "\n"
         );
@@ -57,15 +41,17 @@ public class FormattingTests
         var firstDiff = StringDiffer.PrintFirstDifference(expectedOutput, firstPass.Output);
         if (firstDiff != string.Empty)
         {
-            throw new XunitException($"Formatting error on first pass:\n{firstDiff}");
+            await File.WriteAllTextAsync(actualFilePath, firstPass.Output);
+            throw new XunitException($"Formatting error on first pass for '{test.Name}':\n{firstDiff}");
         }
 
-        var secondPass = GmlFormatter.Format(firstPass.Output, options);
+        var secondPass = GmlFormatter.Format(firstPass.Output, test.Options);
 
         var secondDiff = StringDiffer.PrintFirstDifference(expectedOutput, secondPass.Output);
         if (secondDiff != string.Empty)
         {
-            throw new XunitException($"Formatting error on second pass:\n{secondDiff}");
+            await File.WriteAllTextAsync(actualFilePath, firstPass.Output);
+            throw new XunitException($"Formatting error on second pass for '{test.Name}':\n{secondDiff}");
         }
     }
 }
@@ -78,9 +64,10 @@ public class FormattingTestProvider : IEnumerable<object[]>
 
     public IEnumerator<object[]> GetEnumerator()
     {
-        var filePath = Path.Combine(rootDirectory.FullName, "Gml", "FormattingTests");
-        var files = Directory.EnumerateFiles(filePath, $"*{SampleTests.TestFileExtension}");
-        return files.Select(fp => new object[] { new TestFile(fp) }).GetEnumerator();
+        var directoryPath = Path.Combine(rootDirectory.FullName, "Gml", "FormattingTests");
+        var options = ConfigFileHandler.FindConfigOrDefault(directoryPath);
+        var files = Directory.EnumerateFiles(directoryPath, $"*{SampleTests.TestFileExtension}");
+        return files.Select(fp => new object[] { new TestFile(fp, options) }).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

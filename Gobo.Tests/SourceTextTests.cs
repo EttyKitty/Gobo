@@ -1,5 +1,4 @@
-﻿using Gobo.Text;
-using Xunit.Abstractions;
+using Gobo.Text;
 using Xunit.Sdk;
 
 namespace Gobo.Tests;
@@ -9,14 +8,7 @@ namespace Gobo.Tests;
 /// </summary>
 public class SourceTextTests
 {
-    private readonly ITestOutputHelper output;
-
     public const string TestFileExtension = ".test";
-
-    public SourceTextTests(ITestOutputHelper output)
-    {
-        this.output = output;
-    }
 
     [Theory]
     [ClassData(typeof(SampleFileProvider))]
