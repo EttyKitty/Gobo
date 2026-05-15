@@ -203,12 +203,27 @@ call(x____________, y___________, method({closure: self}, function() {
 
 ```
 
+### Trailing commas
+
+GoboCat adds trailing commas to structs, arrays, and argument lists when they span multiple lines, but removes them when everything fits on a single line.
+```js
+// multiline — trailing comma added
+s = {
+    d: 5,
+    f: 9,
+};
+
+// singleline — trailing comma removed
+s = {d: 5, f: 9};
+```
+
 ### Array Accessors
+
 Automatically converts legacy multi-index arrays to modern (JS-style) chained accessors:
 ```js
-`array[0, 2];`
+array[0, 2];
 
-`array[0][2];`
+array[0][2];
 ```
 
 ### Comments
