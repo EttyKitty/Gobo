@@ -66,9 +66,12 @@ public class FormattingTestProvider : IEnumerable<object[]>
     public IEnumerator<object[]> GetEnumerator()
     {
         string directoryPath = Path.Combine(rootDirectory.FullName, "Gml", "FormattingTests");
-        FormatOptions options = ConfigFileHandler.FindConfigOrDefault(directoryPath);
-        IEnumerable<string> files = Directory.EnumerateFiles(directoryPath, $"*{SampleTests.TestFileExtension}");
-        return files.Select(fp => new object[] { new TestFile(fp, options) }).GetEnumerator();
+        IEnumerable<string> files = Directory.EnumerateFiles(directoryPath, $"*{FormattingTests.TestFileExtension}", SearchOption.AllDirectories);
+        return files.Select(fp =>
+        {
+            FormatOptions options = ConfigFileHandler.FindConfigOrDefault(fp);
+            return new object[] { new TestFile(fp, options) };
+        }).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
