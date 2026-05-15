@@ -94,8 +94,5 @@ internal sealed class ParenthesizedExpression : GmlSyntaxNode
         return Expression.GetHashCode();
     }
 
-    private static bool ShouldNotBreak(GmlSyntaxNode node)
-    {
-        return node is FunctionDeclaration or StructExpression or ConditionalExpression;
-    }
+    private static bool ShouldNotBreak(GmlSyntaxNode node) => node is FunctionDeclaration or StructExpression or ConditionalExpression or CallExpression;
 }
