@@ -56,3 +56,18 @@ call(
 call();
 
 call();
+
+if (call(
+    foo,
+    foo
+)) {
+    foo = foo;
+}
+
+repeat (obj.foo) {
+    obj.call(
+        "foo",
+        "foo",
+        foo
+    );
+}
