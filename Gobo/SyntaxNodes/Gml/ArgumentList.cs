@@ -9,9 +9,14 @@ internal sealed class ArgumentList : GmlSyntaxNode
     public static Doc EmptyArguments => "()";
 
     public ArgumentList(TextSpan span, List<GmlSyntaxNode> arguments)
-        : base(span)
+            : base(span)
     {
-        AsChildren(arguments);
+        while (arguments.Count > 0 && IsRedundant(arguments[^1]))
+        {
+            arguments.RemoveAt(arguments.Count - 1);
+        }
+
+        _ = AsChildren(arguments);
     }
 
     public override Doc PrintNode(PrintContext ctx)
@@ -89,4 +94,7 @@ internal sealed class ArgumentList : GmlSyntaxNode
         return Children.Last() is FunctionDeclaration or StructExpression
             && Children.Take(Children.Count - 1).All(arg => arg is not FunctionDeclaration);
     }
+
+    private static bool IsRedundant(GmlSyntaxNode node) => node.Comments.Count == 0
+            && (node is UndefinedArgument || (node is Identifier { Name: "undefined" }));
 }

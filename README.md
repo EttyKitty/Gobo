@@ -200,20 +200,53 @@ call(
 call(x____________, y___________, method({closure: self}, function() {
     return;
 }));
+```
 
+### Arguments
+
+GoboCat enforces a space before each non-empty argument:
+```js
+// before
+call(foo,bar);
+
+// after
+call(foo, bar);
+```
+
+### Empty arguments
+
+In GML, empty arguments are implicitly passed to functions as `undefined`. GoboCat strips trailing empty arguments but preserves internal ones, trimming whitespace:
+```js
+// before
+call(,,foo,);
+
+// after
+call(,, foo);
+```
+
+With `explicitUndefined` enabled, internal empty arguments are replaced with `undefined`:
+```js
+// before
+call(,,foo,);
+call(, /*comment*/ ,)
+
+// after
+call(undefined, undefined, foo);
+call(/*comment*/);
 ```
 
 ### Trailing commas
 
-GoboCat adds trailing commas to structs, arrays, and argument lists when they span multiple lines, but removes them when everything fits on a single line.
+GoboCat strips trailing commas from argument lists in the source. It only adds them back to structs, arrays, and argument lists when they span multiple lines.
+
 ```js
-// multiline — trailing comma added
+// multiline
 s = {
     d: 5,
     f: 9,
 };
 
-// singleline — trailing comma removed
+// singleline
 s = {d: 5, f: 9};
 ```
 
@@ -221,8 +254,10 @@ s = {d: 5, f: 9};
 
 Automatically converts legacy multi-index arrays to modern (JS-style) chained accessors:
 ```js
+// before
 array[0, 2];
 
+// after
 array[0][2];
 ```
 
@@ -249,26 +284,6 @@ GML provides alternative forms for certain symbols. GoboCat standardizes these s
 | `begin`, `{` | `{`|
 | `end`, `}` | `}`|
 |`mod`, `%` | `%`|
-
-### Empty arguments
-
-In GML, empty arguments are implicitly passed to functions as `undefined`. GoboCat trims whitespace between commas while enforcing a space before each non-empty argument.
-```js
-// before
-call(,,foo,);
-
-// after
-call(,, foo,);
-```
-
-With the `explicitUndefined` option enabled, empty arguments are replaced with the literal `undefined` keyword:
-```js
-// before
-call(,,foo,);
-
-// after (explicitUndefined: true)
-call(undefined, undefined, foo);
-```
 
 ### Redundant parentheses
 
