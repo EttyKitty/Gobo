@@ -12,15 +12,13 @@ GoboCat is an opinionated formatter for GameMaker Language (GML). It enforces a 
 
 By using GoboCat, you agree to cede control over the nitty-gritty details of formatting. In return, GoboCat gives you speed, determinism, and smaller git diffs. End style debates with your team and save mental energy for what's important!
 
-## What is different in this fork? It's slightly less opinionated
+## What is different in GoboCat vs Gobo? It's slightly less opinionated
 
-This fork maintains the core "Option Philosophy" of Prettier but introduces specific toggles for common GML stylistic preferences that the original project restricted.
+GoboCat maintains the opinionated nature of most stylistic choices, but introduces specific toggles for style preferences that the original project didn't.
 
-- **Expanded Configuration:** Adds toggles for vertical formatting and block spacing.
-  - **Context-Aware Verticality:** New options for structs and arrays specifically target variable initialization to keep declarations clean without bloating inline logic.
-- **Modernized Array Accessors:** Automatically converts legacy multi-index arrays `array[0, 2]` to modern chained accessors `array[0][2]`.
+It attempts to be backward compatible, and not introduce new default behaviors that alter output without an optional toggle, with rare exceptions.
 
-## Example
+## Example (only some of the options; see the online demo for more)
 
 ```js
 // Input
@@ -110,7 +108,7 @@ The following configuration options are available:
 | `tabWidth` | `4` | Spaces per indentation level (used for line length calculation if `useTabs` is true). |
 | `flatExpressions` | `false` | Prevents expressions from wrapping, regardless of `maxLineWidth`. |
 | `verticalStructs` | `true` | Forces struct members onto new lines during variable initialization. |
-| `verticalArrays` | `true` | Forces array elements onto new lines during variable initialization (ignores 1-length arrays). |
+| `verticals` | `true` | Forces  elements onto new lines during variable initialization (ignores 1-length s). |
 | `multilineTernary` | `false` | Forces conditional (ternary) expressions onto multiple lines (ESLint `multiline-ternary`). |
 | `limitWidth` | `false` | Toggle for `maxLineWidth` enforcement. |
 | `blankLineAfterBlocks` | `true` | Injects a blank line after `}` if followed by another statement (IDE2003 style). |
@@ -178,6 +176,8 @@ GoboCat attempts to preserve empty lines between statements, following these rul
 - Files always end with a single newline.
 - Top-level functions and static functions are always surrounded by empty lines.
 
+### Line endings
+
 GoboCat enforces LF line endings (`\n`).
 
 ### Line wrapping
@@ -201,10 +201,18 @@ call(x____________, y___________, method({closure: self}, function() {
 
 ```
 
+### Array Accessors
+Automatically converts legacy multi-index arrays to modern (JS-style) chained accessors:
+```js
+`array[0, 2];`
+
+`array[0][2];`
+```
 
 ### Comments
 
-_Warning: This behavior is subject to change!_
+> [!WARNING]
+> This behavior is subject to change!
 
 GoboCat currently does not format the content of comments. JSDoc comment formatting may be added in the future.
 
