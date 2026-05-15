@@ -1,4 +1,4 @@
-﻿using Gobo.Printer.DocTypes;
+using Gobo.Printer.DocTypes;
 
 namespace Gobo.SyntaxNodes.Gml;
 
@@ -23,15 +23,13 @@ internal sealed class ConditionalExpression : GmlSyntaxNode
 
     public override Doc PrintNode(PrintContext ctx)
     {
-        LineDoc lineBreak = ctx.Options.MultilineTernary ? Doc.HardLine : Doc.Line;
-
         Doc[] innerContents =
         {
-            lineBreak,
+            Doc.Line,
             "?",
             " ",
             Doc.Concat(WhenTrue.Print(ctx)),
-            lineBreak,
+            Doc.Line,
             ":",
             " ",
             Doc.Concat(WhenFalse.Print(ctx))
@@ -48,8 +46,10 @@ internal sealed class ConditionalExpression : GmlSyntaxNode
                 : Doc.Indent(innerContents)
         };
 
-        var printed =
-            Parent is ConditionalExpression ? Doc.Concat(outerContents) : Doc.Group(outerContents);
+        bool shouldBreak = ctx.Options.MultilineTernary && Parent is not (ConditionalExpression or ArgumentList);
+        Doc printed = Parent is ConditionalExpression
+            ? Doc.Concat(outerContents)
+            : new Group() { Contents = Doc.Concat(outerContents), Break = shouldBreak };
 
         return ctx.Options.FlatExpressions ? Doc.ForceFlat(printed) : printed;
     }
