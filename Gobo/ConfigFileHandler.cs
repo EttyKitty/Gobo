@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-namespace Gobo.Cli;
+namespace Gobo;
 
 public static class ConfigFileHandler
 {

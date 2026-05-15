@@ -1,10 +1,9 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 using DocoptNet;
 
 using Gobo;
-using Gobo.Cli;
 using Gobo.Text;
 
 const string usage =
