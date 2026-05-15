@@ -13,8 +13,5 @@ public class TestFile
         Options = options ?? FormatOptions.DefaultTestOptions;
     }
 
-    public override string ToString()
-    {
-        return Name;
-    }
+    public override string ToString() => Name;
 }

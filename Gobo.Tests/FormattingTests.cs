@@ -1,4 +1,5 @@
 using System.Collections;
+
 using Xunit.Sdk;
 
 namespace Gobo.Tests;
@@ -16,9 +17,9 @@ public class FormattingTests
     [ClassData(typeof(FormattingTestProvider))]
     public async Task FormatTests(TestFile test)
     {
-        var testFilePath = test.FilePath;
-        var expectedFilePath = testFilePath.Replace(TestFileExtension, ExpectedFileExtension);
-        var actualFilePath = testFilePath.Replace(TestFileExtension, ActualFileExtension);
+        string testFilePath = test.FilePath;
+        string expectedFilePath = testFilePath.Replace(TestFileExtension, ExpectedFileExtension);
+        string actualFilePath = testFilePath.Replace(TestFileExtension, ActualFileExtension);
 
         if (!Path.Exists(testFilePath))
         {
@@ -30,24 +31,24 @@ public class FormattingTests
             throw new XunitException($"Expected test file {expectedFilePath} does not exist!");
         }
 
-        var input = await File.ReadAllTextAsync(testFilePath);
+        string input = await File.ReadAllTextAsync(testFilePath);
 
-        var firstPass = GmlFormatter.Format(input, test.Options);
+        FormatResult firstPass = GmlFormatter.Format(input, test.Options);
 
-        var expectedOutput = (await File.ReadAllTextAsync(expectedFilePath)).ReplaceLineEndings(
+        string expectedOutput = (await File.ReadAllTextAsync(expectedFilePath)).ReplaceLineEndings(
             "\n"
         );
 
-        var firstDiff = StringDiffer.PrintFirstDifference(expectedOutput, firstPass.Output);
+        string firstDiff = StringDiffer.PrintFirstDifference(expectedOutput, firstPass.Output);
         if (firstDiff != string.Empty)
         {
             await File.WriteAllTextAsync(actualFilePath, firstPass.Output);
             throw new XunitException($"Formatting error on first pass for '{test.Name}':\n{firstDiff}");
         }
 
-        var secondPass = GmlFormatter.Format(firstPass.Output, test.Options);
+        FormatResult secondPass = GmlFormatter.Format(firstPass.Output, test.Options);
 
-        var secondDiff = StringDiffer.PrintFirstDifference(expectedOutput, secondPass.Output);
+        string secondDiff = StringDiffer.PrintFirstDifference(expectedOutput, secondPass.Output);
         if (secondDiff != string.Empty)
         {
             await File.WriteAllTextAsync(actualFilePath, firstPass.Output);
@@ -64,9 +65,9 @@ public class FormattingTestProvider : IEnumerable<object[]>
 
     public IEnumerator<object[]> GetEnumerator()
     {
-        var directoryPath = Path.Combine(rootDirectory.FullName, "Gml", "FormattingTests");
-        var options = ConfigFileHandler.FindConfigOrDefault(directoryPath);
-        var files = Directory.EnumerateFiles(directoryPath, $"*{SampleTests.TestFileExtension}");
+        string directoryPath = Path.Combine(rootDirectory.FullName, "Gml", "FormattingTests");
+        FormatOptions options = ConfigFileHandler.FindConfigOrDefault(directoryPath);
+        IEnumerable<string> files = Directory.EnumerateFiles(directoryPath, $"*{SampleTests.TestFileExtension}");
         return files.Select(fp => new object[] { new TestFile(fp, options) }).GetEnumerator();
     }
 

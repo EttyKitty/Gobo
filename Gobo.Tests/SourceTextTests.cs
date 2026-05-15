@@ -1,4 +1,5 @@
 using Gobo.Text;
+
 using Xunit.Sdk;
 
 namespace Gobo.Tests;
@@ -14,10 +15,10 @@ public class SourceTextTests
     [ClassData(typeof(SampleFileProvider))]
     public async Task EnsureContentEquals(TestFile test)
     {
-        var filePath = test.FilePath;
+        string filePath = test.FilePath;
 
-        var input = await File.ReadAllTextAsync(filePath);
-        var wrongInput = "obviously wrong input";
+        string input = await File.ReadAllTextAsync(filePath);
+        string wrongInput = "obviously wrong input";
 
         var sourceTextA = new StringText(input);
         var sourceTextB = new StringText(input);
